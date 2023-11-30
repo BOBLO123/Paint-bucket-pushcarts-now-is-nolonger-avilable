@@ -1,0 +1,50 @@
+input {
+	height: 50px;
+	width: 77px;
+	color: #95a5a6;
+}
+#stoneButton{
+	background-color: #566573;
+}
+#woodButton{
+	background-color: #6e2c00;
+}
+#foodButton{
+	background-color: #c36241;
+}
+tr{
+	width: 156px;
+}
+input.shopButtons{
+	background-color: #336666; 
+}
+#shopButton{
+	background-color: #336666; 
+}
+html{
+	background-image: url(Fon2.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+p.info{
+	opacity: 0.7;
+	background-color: #46c7c7;
+}
+.i:hover::after { 
+    content: attr(data-title); 
+    position: absolute; /* Абсолютное позиционирование */
+    left: 0; right: 0; bottom: 5px; /* Положение подсказки */
+    z-index: 1; /* Отображаем подсказку поверх других элементов */
+    background: silver; /* Полупрозрачный цвет фона */
+    color: #336666; /* Цвет текста */
+    text-align: center; /* Выравнивание текста по центру */
+    font-family: Segoe UI Semibold, sans-serif; /* Гарнитура шрифта */
+    font-size: 20px; /* Размер текста подсказки */
+    padding: 5px 10px; /* Поля */
+   }
+}
