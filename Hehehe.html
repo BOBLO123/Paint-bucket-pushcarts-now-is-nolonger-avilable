@@ -13,7 +13,13 @@
 <p> <a href="slope/index.html">Slope game</p>
 
 <p> <a href="bigfoot/index.html">Bigfoot game</p>
-<button><a href="Sites&stuff.html">Sites&stuff</button>
+<div class="container">
+  <div class="vertical-center">
+    <button><a href="sites&stuff.html">Sites&stuff</a></button>
+  </div>
+</div>
+
+
 <style> body {
     background-color: lightblue;
 }
@@ -41,7 +47,21 @@ a {text-align: center;}
 <p> <a href="proxy.html">stolen proxy</p>
 <p class="mix"></p>
 
+<style>
+.container { 
+  height: 200px;
+  position: relative;
+  border: 3px solid green; 
+}
 
+.vertical-center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+</style>
 
 
 
