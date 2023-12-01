@@ -1,8 +1,8 @@
-tic<style>
+
     p.mix{border-style: none none solid none;}
 </style> 
-<h2>Shoutout to Dbkickva from hipposite for helping with the code</h2> 
-<h1>Welcome to MEHICO <sub>Gooooooood Morning Mehico!!!!</sub> </h1>
+<h3>Try Hipposite!</h3>
+<h2>Welcome to MEHICO <sub>Gooooooood Morning Mehico!!!!</sub> </h2>
 <p class="mix"></p>
 <p><a href="sites&stuff.html">Sites&stuff</a></p>
 
@@ -39,19 +39,49 @@ a {text-align: center;}
   position: relative;
   border: 3px solid green; 
 }
-
-.vertical-center {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
+.center{
+text-align: center;
 }
 </style>
 
+<style>
+.container {
+  height: 200px;
+  position: relative;
+  border: 3px solid green;
+}
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.container { 
+  height: 200px;
+  position: relative;
+  border: 3px solid green; 
+}
 
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+</style>
+</head>
+<body>
 
+<h2>Centering</h2>
+<p>In this example, we use positioning and the transform property to vertically and horizontally center the button element:</p>
 
+<div class="container">
+  <div class="center">
+    <button><a href="index.html">Fake home</button>
+  </div>
+</div>
 
-<p> <a href="index.html">Fake home</p>
-<p><img src="ryanrenold.jpg" alt="ryanreynold" class="veritcal-center"></p>
+</body>
+</html>
+
+<p><img src="ryanreynold.jpg" alt="ryanreynold" class="veritcal-center"></p>
