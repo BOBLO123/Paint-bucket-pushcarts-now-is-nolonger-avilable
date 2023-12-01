@@ -1,3 +1,0 @@
-language = "nodejs"
-onBoot = "bash repl.sh"
-run = "bash repl.sh"
