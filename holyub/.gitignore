@@ -1,0 +1,5 @@
+node_modules
+.gitpod.yml
+.vscode
+.gitattributes
+.well-known
