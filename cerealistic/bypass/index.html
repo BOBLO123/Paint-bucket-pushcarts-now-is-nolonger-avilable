@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<font color="#FFFFFF">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Blanker</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="main" style="text-align: center;">
+  <h1>About:Blank Bypass</h1>
+  <input type="url" onkeydown="if(event.key==='Enter') go()" size="25" autofocus>
+  <button onclick="go()">Go</button><br>
+</div>
+  <!-- footer css from https://stackoverflow.com/a/59997588 -->
+<script src="https://cdn.jsdelivr.net/gh/FogNetwork/ABC/index.js"></script>
+  <script>
+    function validURL(str) {
+  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return !!pattern.test(str);
+}
+    function go() {
+      var page = new ABC({
+        "type": "blank",
+        "url": validURL(document.querySelector('input').value) ? document.querySelector('input').value : window.location.origin
+      })
+      page.open()
+    }
+  </script>
+</body>
+</font>
+</html>
