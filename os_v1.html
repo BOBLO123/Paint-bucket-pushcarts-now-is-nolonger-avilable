@@ -1,0 +1,1561 @@
+<html>
+
+<head>
+
+
+  <style>
+    html,
+    body,
+    head {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+
+    }
+  </style>
+  <!-- styles and scripts -->
+  <style id="taskbar_styles">
+    /* theme styles */
+    .blur-bg {
+      background-image: linear-gradient(to right top, #403539CC, #453b41CC, #494248CC, #4e484fCC, #524f56CC);
+      /* backdrop-filter: blur(15px); */
+    }
+
+    .blur-bg::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      z-index: -1;
+    }
+
+    .bg {
+      background-size: 100% 100%;
+    }
+
+    /* Taskbar styles*/
+    #gallium-taskbar {
+      width: 100%;
+      height: 45px;
+
+      position: fixed;
+      left: 0;
+      /* bottom: -44px; */
+      bottom: 0px;
+      transition-duration: 0.5s;
+      border-top-left-radius: 25px;
+      border-top-right-radius: 25px;
+      z-index: 2147483600
+    }
+
+    #gallium-taskbar:hover {
+      bottom: 0px;
+      transition-duration: 0.5s;
+    }
+
+    #gallium-taskbar::before {
+      border-top-left-radius: 25px;
+      border-top-right-radius: 25px;
+    }
+
+    #gallium-taskbar * {
+      display: inline-block;
+      user-select: none;
+    }
+
+    .gallium-tb-icon {
+      width: 37px;
+      height: 37px;
+      margin-bottom: 2px;
+      margin-left: 30px;
+    }
+
+    .gallium-middle-stuff {
+      margin-right: 5px;
+      width: calc(100% - 190px);
+    }
+
+    .gallium-far-right-stuff {
+      float: right;
+
+    }
+
+    #gallium-time-container {
+      background-color: rgba(255, 255, 255, 0.2);
+      width: 120px;
+      height: 35px;
+      margin-top: 5px;
+      margin-right: 6px;
+      border-radius: 40px;
+      font-family: Verdana, sans-serif;
+      font-size: 90%;
+      color: white;
+    }
+
+
+
+    .gallium-left-icon {
+      margin-bottom: 20px;
+      position: relative;
+      bottom: 2px;
+    }
+
+    #gallium-actual-time {
+      position: relative;
+      bottom: 9px;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
+      /* margin-left: 4px;
+        margin-top: 8px; */
+    }
+
+    /* remove old extension taskbar*/
+    div#eXelper-taskbar {
+      left: -100% !important;
+    }
+  </style>
+  <style id="window_styles">
+    /* helpers */
+    .left {
+      float: left;
+    }
+
+    .right {
+      float: right;
+    }
+
+
+
+    /* Window styles */
+    .windowContent {
+      /* strange issue with not covering it ?!? */
+      border-bottom-right-radius: 4px;
+      border-bottom-left-radius: 3px;
+      user-select: none;
+    }
+
+    .titleBar {
+      width: 100%;
+      border-top-right-radius: 3px;
+      border-top-left-radius: 3px;
+    }
+
+    .titleBarButton {
+      background-color: transparent;
+      border: none;
+      padding: 0;
+      /* margin-right: 1px; */
+      margin: 2px;
+      width: 25px;
+      height: 25px;
+      transition-duration: 0.1s;
+      border-radius: 100%;
+      color: white;
+    }
+
+    .titleBarButton:hover {
+      background-color: #aaaaaa40;
+    }
+
+    .resizeHandle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #888;
+      bottom: 0;
+      right: 0;
+      cursor: nwse-resize;
+
+      /* Weird bottom right corner bit doesn't fully cover the content?!? */
+      border-bottom-right-radius: 3px;
+    }
+
+    titleText {
+      display: inline-block;
+      text-align: center;
+      width: calc(100% - 100px);
+      height: calc(100% - 4px);
+      line-height: 30px;
+      color: white;
+    }
+
+    window {
+      display: block;
+      position: absolute;
+      border-radius: 3px;
+      box-shadow: 1px 1px 13px 0px rgba(0, 0, 0, 0.48);
+      -webkit-box-shadow: 1px 1px 13px 0px rgba(0, 0, 0, 0.48);
+      -moz-box-shadow: 1px 1px 13px 0px rgba(0, 0, 0, 0.48);
+    }
+
+    /* Window Templates */
+    .windowTitleBarDefault {
+      background-color: #564350;
+      width: 100%;
+      height: 30px;
+      user-select: none;
+      position: relative;
+
+      /* Added for positioning of resize handle */
+    }
+
+    .windowContentDefault {
+      background-color: #E5FFFF;
+      width: 100%;
+      height: calc(100% - 30px);
+    }
+
+    .windowContentDefaultLight {
+      background-color: #FFFFFF;
+      width: 100%;
+      height: calc(100% - 30px);
+    }
+
+    .windowTitleBarRH {
+      background-color: #dee1e6;
+      width: 100%;
+      height: 30px;
+      user-select: none;
+      position: relative;
+
+    }
+
+    .windowContentRH {
+      background-color: white;
+      width: 100%;
+      height: calc(100% - 30px);
+    }
+
+    .templateRH {
+      color: black;
+    }
+
+    /* taskbar styles */
+    .windowTaskbarIcon {
+      width: 30px;
+      height: 30px;
+      margin-bottom: 8px;
+      margin-right: 5px;
+    }
+
+    .focusedTaskbar {
+      padding-bottom: 4px;
+      background: linear-gradient(to bottom, white 0%, white 100%);
+      background-size: 20px 2px, 100% 100%;
+
+      /* Add another value for the full height */
+      background-position: calc(50%) 32px;
+      background-repeat: no-repeat;
+    }
+
+    .minimizedTaskbar.focusedTaskbar {
+      background: linear-gradient(to bottom, #ffffff55 0%, #ffffff55 100%);
+      background-size: 20px 2px, 100% 100%;
+
+      /* Add another value for the full height */
+      background-position: calc(50%) 32px;
+      background-repeat: no-repeat;
+    }
+  </style>
+  <style id="search-menu-styles">
+    /* search menu stuff */
+
+    .search-menu {
+      position: absolute;
+      left: 5px;
+      bottom: 50px;
+      width: 400px;
+      height: 300px;
+      border-radius: 20px;
+      z-index: 1;
+      transition-duration: 0.175s;
+      display: block;
+    }
+
+    .search-menu::before {
+      border-radius: 20px;
+    }
+
+    .search-menu.hidden {
+      display: none;
+      height: 0px;
+      left: -100%;
+      /* bottom: -10px; */
+    }
+
+    .search-input {
+      width: calc(100% - 60px);
+      float: right;
+      height: 3em;
+      background-color: transparent;
+      color: white;
+
+      border: none;
+      outline: none;
+      padding-left: 4px;
+      padding-top: 8px;
+      padding-right: 4px;
+    }
+
+    .search-input::placeholder {
+      color: #b2b2b2;
+    }
+
+    .search-menu-divider {
+      width: calc(100% - 2px);
+      background-color: transparent;
+      border-bottom: 1px solid #aaa;
+    }
+
+
+    #google-logo {
+      width: 30px;
+      height: 30px;
+      display: inline-block;
+      margin-left: 10px;
+      margin-top: 10px;
+      background-image: url("https://www.vectorlogo.zone/logos/google/google-icon.svg");
+      background-size: contain;
+    }
+
+    #top-row {
+
+      width: 100%;
+    }
+
+    #search-menu-bottom-row {
+      width: calc(100% - 80px);
+      height: calc(100% - 60px);
+      display: grid;
+      justify-content: center;
+      align-items: center;
+      align-content: center;
+      justify-items: center;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      gap: 10px;
+      padding-left: 40px;
+      padding-right: 40px;
+    }
+  </style>
+  <style id="generic-app-styles">
+    /* app stuff */
+
+    .full-frame {
+      width: 100%;
+      height: 100%;
+      padding: none;
+      border: none;
+    }
+
+    .app-launcher {
+      width: 100%;
+      height: 100%;
+    }
+
+    .app-icon {
+      width: 40px;
+      height: 40px;
+      margin-left: 9px;
+      margin-top: 3px;
+    }
+
+    .app-icon:hover {
+      transform: scale(1.1);
+    }
+
+    span.app-icon {
+      font-size: 40px;
+      margin-left: 9px;
+      margin-top: 6px;
+    }
+  </style>
+  <div id="specific-app-styles">
+    <style>
+      .chrome-style {
+        caret-color: rgb(26, 115, 232);
+        color: rgb(32, 33, 36);
+        font-family: Roboto, sans-serif;
+      }
+
+      .chrome-style.shadow {
+
+        box-shadow: 2px 2px 6px 0px color-mix(in srgb, rgb(60, 64, 67) 30%, transparent);
+        -webkit-box-shadow: 2px 2px 6px 0px color-mix(in srgb, rgb(60, 64, 67) 30%, transparent);
+        -moz-box-shadow: 2px 2px 6px 0px color-mix(in srgb, rgb(60, 64, 67) 30%, transparent);
+      }
+
+      .settings-sidebar {
+        position: absolute;
+        display: block;
+        left: 0;
+        top: 30px;
+        width: 180px;
+        height: calc(100% - 30px);
+      }
+
+      .sidebar-item {
+        width: 170px;
+        height: 1em;
+        border-radius: 50px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        background-color: transparent;
+        align-content: center;
+        text-align: left;
+        padding: 0.5em;
+        padding-right: 0;
+      }
+
+      .sidebar-item:hover {
+        background-color: rgb(232 234 237);
+      }
+
+      .sidebar-link {
+        color: blue;
+        text-decoration: none;
+      }
+
+      .sidebar-header {
+        padding-top: 35px;
+        padding-left: 5px;
+        padding-bottom: 5px;
+        user-select: none;
+      }
+
+      .sidebar-header-text {
+        font-size: 30px;
+        display: inline-block;
+        position: relative;
+        top: -5px;
+      }
+
+      .settings-container {
+        position: absolute;
+        display: block;
+        margin-top: 8px;
+        left: 180px;
+        width: calc(100% - 180px);
+        height: calc(100% - 38px);
+        overflow-x: scroll;
+        overflow-y: scroll;
+      }
+
+      .settings-category {
+        text-align: center;
+        margin: auto;
+        margin-left: 50px;
+        width: 500px;
+        border-radius: 8px;
+        margin-bottom: 50px;
+        overflow: hidden;
+      }
+
+      .settings-category-container {}
+
+      .setting {
+        padding-bottom: 10px;
+        padding-top: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
+        text-align: left;
+      }
+
+      .setting:hover {
+        background-color: rgba(32, 33, 36, 0.1);
+      }
+
+      .setting-label {
+        user-select: none;
+      }
+
+
+      .textInputWrapper {
+        display: inline-block;
+        border-radius: 4px;
+        overflow: hidden;
+        width: 195px;
+        float: right;
+        transform: translateY(-4px);
+      }
+
+      input.setting-input[type="text"] {
+        border: none;
+        outline: none;
+        background-color: #f1f3f4;
+        padding-top: 6px;
+        padding-bottom: 6px;
+        padding-left: 8px;
+        padding-right: 9px;
+        resize: none;
+        width: calc(100% - 16px);
+        /* height: calc(100% - 12px); */
+        height: 2em;
+      }
+
+      input.setting-input[type="text"]:focus {
+        border: none;
+        border-bottom-color: #1a73e8;
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+      }
+
+      .setting-input {
+        float: right;
+        border-radius: 3px;
+        outline: none;
+        background-color: #f1f3f4;
+        border: none;
+        height: 1.5em;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+      }
+
+      select.setting-input {}
+
+
+      .settings-category-label {
+        margin-bottom: 5px;
+        position: relative;
+        left: 50px;
+      }
+
+      .bottom-border {
+        width: 100%;
+        height: 0;
+        padding: 0;
+        margin: 0;
+        border-color: white;
+        border-bottom-width: 0;
+        box-shadow: none;
+      }
+
+      .toggle {
+        appearance: none;
+        width: 28px;
+        height: 12px;
+        border-radius: 10px;
+        background-color: #bdc1c6;
+        cursor: pointer;
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      .toggle:checked {
+        background-color: #8cb9f3;
+      }
+
+      .toggle::after {
+        content: "";
+        display: block;
+        position: relative;
+        top: -2px;
+        left: -2px;
+        width: 16px;
+        height: 16px;
+        border-radius: 10px;
+        background-color: white;
+        transition-duration: 0.25s;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .4)
+      }
+
+      .toggle:checked::after {
+        content: "";
+        display: block;
+        position: relative;
+        top: -2px;
+        left: 14px;
+        width: 16px;
+        height: 16px;
+        border-radius: 10px;
+        background-color: #1a73e8;
+      }
+    </style>
+  </div>
+
+  <script id="common-js">
+    function setInnerHTML(elm, html) {
+      elm.innerHTML = html;
+
+      Array.from(elm.querySelectorAll("script"))
+        .forEach(oldScriptEl => {
+          const newScriptEl = document.createElement("script");
+
+          Array.from(oldScriptEl.attributes).forEach(attr => {
+            newScriptEl.setAttribute(attr.name, attr.value)
+          });
+
+          const scriptText = document.createTextNode(oldScriptEl.innerHTML);
+          newScriptEl.appendChild(scriptText);
+
+          oldScriptEl.parentNode.replaceChild(newScriptEl, oldScriptEl);
+        });
+    }
+
+    function createElement(type, id, clss, append = false, par = document.body) {
+      newEl = document.createElement(type || "div");
+      if (id) newEl.id = id;
+      if (clss) newEl.className = clss;
+      if (append) par.appendChild(newEl);
+      console.log(newEl.class);
+      return newEl;
+    }
+
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        let r = Math.random() * 16 | 0,
+          v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+    console.log(window.location.href);
+
+
+    // window.addEventListener('message', function(event) {
+    //     // Check the origin to ensure it's trusted
+    //     if (true || event.origin === 'http://your-iframe-origin.com') {
+    //         console.log('Message received from iframe:', event.data);
+
+    //         // Handle the message and execute the function
+    //         if (event.data && event.data.type === 'changeStyle') {
+    //           const selector = event.data.selector + "";
+    //           const property = event.data.property + "";
+    //           const value = event.data.value + "";
+    //             changeStyle(selector, property, value);
+    //         }
+    //     }
+    // });
+
+
+    var SETTINGS = {
+      TASKBAR: {
+        AUTOHIDE: {
+          value: false
+        },
+        TASKBAR_HEIGHT: {
+          value: 45
+        }
+      },
+      WINDOW: {
+        DEFAULT_WIDTH: {
+          value: 400
+        },
+        DEFAULT_HEIGHT: {
+          value: 300
+        },
+        DEFAULT_NEW_APP: {
+          value: "Browser"
+        },
+        DEFAULT_TEMPLATE: {
+          value: "Default"
+        },
+        FULLSCREEN: {
+          value: false
+        },
+
+      },
+      BACKGROUND: {
+        URL: {
+          value: localStorage.getItem("bg")
+        },
+        AUTOSAVE: {
+          value: true
+        }
+      },
+      KEYBINDS: {
+        KEYBINDS_ENABLED: {
+          value: true
+        },
+        BINDS: {
+          value: []
+        }
+      }
+    }
+
+    function changeStyle(selector, property, value) {
+      // Find the stylesheet in the document
+      const styleSheets = document.styleSheets;
+      for (let i = 0; i < styleSheets.length; i++) {
+        try {
+          const rules = styleSheets[i].cssRules || styleSheets[i].rules;
+          if (!rules) continue;
+          // Iterate through the rules in the stylesheet
+          for (let j = 0; j < rules.length; j++) {
+            const rule = rules[j];
+            // Check if the rule selector matches the provided selector
+            if (rule.selectorText === selector) {
+              // Set the specified property to the given value
+              rule.style[property] = value;
+              console.log("updated style", property, "for", selector, "with value", value);
+              return true; // Style updated successfully
+            }
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
+      // If the selector or property is not found
+      console.error(`Rule not found for selector: ${selector}`);
+      return false;
+    }
+
+    
+    function addKeybind(modifiers,key, codeToRun) {
+      let bind = {};
+      bind.shiftKey = modifiers.shiftKey || false;
+      bind.ctrlKey = modifiers.ctrlKey || false;
+      bind.altKey = modifiers.altKey || false;
+      bind.metaKey = modifiers.metaKey || false;
+      bind.key = key;
+      bind.run = codeToRun;
+      SETTINGS.KEYBINDS.BINDS.value.push(bind);
+    }
+  </script>
+  <script defer id="taskbar_scripts">
+    function taskbar_scripts() {
+      console.log("running taskbar scripts...");
+      //Taskbar battery and wifi
+      const batteryBar = document.getElementById("gallium-battery-bar");
+      if ('getBattery' in navigator) {
+        navigator.getBattery().then(function (battery) {
+          updateBatteryStatus(battery);
+          battery.addEventListener('chargingchange', function () {
+            updateBatteryStatus(battery);
+          });
+          battery.addEventListener('levelchange', function () {
+            updateBatteryStatus(battery);
+          });
+        });
+      } else {
+        console.log('Battery Status API is not supported in this browser.');
+      }
+
+      function updateBatteryStatus(battery) {
+        console.log(battery.level * 6);
+        let batteryStatus = Math.round(battery.level * 7);
+        batteryStatus = batteryStatus >= 7 ? "full" : batteryStatus + "_bar";
+        console.log(batteryStatus)
+        //batteryBar.innerHTML = "battery_" + batteryStatus;
+      }
+
+      function updateWifiStatus(level, direct = true) {
+
+        if (direct) {
+          if (level < 50) {
+            level = 4;
+          } else if (level < 100) {
+            level = 3;
+          } else if (level < 200) {
+            level = 2;
+          } else {
+            level = 1;
+          }
+        }
+        ///console.log("updated to level", level);
+
+        const wifiBar = document.getElementById("gallium-wifi-bar");
+        wifiBar.innerHTML = (level == 4 || level == 0 ? "signal_wifi_" : "network_wifi_") + level + "_bar";
+      }
+
+      function handleNetworkChange() {
+        if (navigator.connection && navigator.connection.rtt) {
+          let wifiStatus = navigator.connection.rtt;
+          updateWifiStatus(wifiStatus);
+          // console.log("Round-Trip Time (RTT): ", navigator.connection.rtt + " ms");
+        } else {
+          let wifiStatus = 0;
+          let a = 1;
+          const intervalId = setInterval(() => {
+            // console.log("Simulated Wifi Status: ", wifiStatus);
+            wifiStatus += a;
+            if (wifiStatus >= 4 || wifiStatus <= 0) a *= -1;
+            wifiStatus = Math.min(4, Math.max(0, wifiStatus));
+            updateWifiStatus(wifiStatus, false);
+            if (navigator.connection && navigator.connection.rtt) {
+              clearInterval(intervalId);
+              console.log("Network connection is now available.");
+            }
+          }, 200);
+        }
+      }
+      if (navigator.connection) {
+        navigator.connection.addEventListener('change', handleNetworkChange);
+      } else {
+        console.log("Network Information API not supported in this browser.");
+      }
+
+      //time stuff
+      const actualTime = document.getElementById("gallium-actual-time");
+
+      function setTime() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        const time = `${hours}:${minutes}`; //`:${seconds}`;
+
+        actualTime.innerText = time;
+      }
+      setInterval(setTime, 1000);
+    };
+
+  </script>
+  <script defer id="window_scripts">
+    function window_scripts() {
+      console.log("running window scripts...");
+
+      const taskbar = {};
+      taskbar.middle = document.getElementById("gallium-middle-stuff-content");
+      const windowTemplates = {};
+      windowTemplates.default = document.getElementById("windowTemplateDefault");
+      windowTemplates.defaultLight = document.getElementById("windowTemplateDefaultLight");
+      windowTemplates.Browser = document.getElementById("windowTemplateBrowser");
+      const windowsList = [];
+      const appsList = {};
+
+      const apps = {
+        default: {
+          comment: "default app",
+          description: "default app",
+          code: "content",
+          name: "Default",
+          data: {
+            stuff: "more stuff"
+          },
+          icon: "https://example.com/iconurl.png",
+          materialIcon: "lens",
+          options: {
+            template: "default",
+          }
+        },
+        Browser: {
+          comment: "random browser I found",
+          description: "browser (proxy, so it should work with everything)",
+          code: document.getElementById("appBrowser").innerHTML,
+          name: "Browser",
+          data: {
+            url: "https://bing.bizuit.com"
+          },
+          icon: "https://www.google.com/chrome/static/images/chrome-logo.svg",
+          options: {
+            template: "Browser",
+          }
+        },
+        Settings: {
+          comment: "TODO: get clone",
+          description: "settings app",
+          code: document.getElementById("appSettings").innerHTML,
+          name: "Settings",
+          data: {},
+          materialIcon: "settings",
+          icon: "https://img.icons8.com/?size=256&id=fvKS3AKw1AyE&format=png",
+          options: {
+            template: "defaultLight",
+            fullscreen: true
+          }
+        },
+      }
+
+      var topWindowZ = 1;
+
+
+      //TODO
+      //!!!!!!!!!!!!!!!!!!!!
+      //=====================
+      const searchMenuBottomRow = document.querySelector("#search-menu-bottom-row");
+      class appLauncher {
+        constructor(app) {
+          this.UUID = generateUUID();
+          this.app = app;
+
+          this.launcher = createElement("div", this.UUID + "-launcher", "app-launcher", true, searchMenuBottomRow);
+
+
+
+          if (app.icon) {
+            this.appIcon = createElement("img", this.UUID + "-icon", "app-icon", true, this.launcher);
+            this.appIcon.src = app.icon;
+            //if (app.materialIcon) this.appIcon.style.display = "none";
+          }
+          if (app.materialIcon) {
+            this.appImage = createElement("span", this.UUID + "-icon", (app.materialIcon != undefined ? "material-symbols-outlined " : " ") + "app-icon", true, this.launcher);
+            if (app.icon) this.appImage.style.display = "none";
+            this.appImage.innerHTML = app.materialIcon;
+          }
+
+          this.init();
+        }
+        init() {
+          this.addEventListeners();
+          appsList[this.app.name] = this;
+        }
+        addEventListeners() {
+          this.launcher.addEventListener("click", () => this.launchApp());
+        }
+        launchApp() {
+          console.log(this.app);
+          new Window(" ", this.app.options, this.app.code, this.app.icon);
+        }
+      }
+      let appLaunchers = [];
+      Object.keys(apps).forEach((appName, i) => {
+        let app = apps[appName];
+        console.log(app);
+        appLaunchers.push(new appLauncher(app))
+      })
+
+      //windows
+      class Window {
+        constructor(title, options, content, icon) {
+          this.title = title || "title";
+          this.options = Object.assign({
+            width: SETTINGS.WINDOW.DEFAULT_WIDTH.value,
+            height: SETTINGS.WINDOW.DEFAULT_HEIGHT.value,
+            template: SETTINGS.WINDOW.DEFAULT_TEMPLATE.value,
+            fullscreen: SETTINGS.WINDOW.FULLSCREEN.value
+          }, options);
+          this.content = content || "content";
+          this.icon = icon || "https://www.google.com/chrome/static/images/chrome-logo.svg";
+          this.UUID = generateUUID();
+          this.taskbarIcon = createElement("img", this.UUID + "-taskbar", "windowTaskbarIcon", true, taskbar.middle);
+          this.taskbarIcon.classList.add("windowTaskbarIcon");
+          this.window = createElement("window", this.UUID + "-window", "window", true);
+          this.window.setAttribute("w", this.options.width);
+          this.window.setAttribute("w", this.options.height);
+          this.init();
+
+        }
+        init() {
+          this.window.appendChild(windowTemplates[this.options.template].content.cloneNode(true));
+          this.titleBar = this.window.querySelector(".titleBar");
+          this.titleText = this.titleBar.querySelector("titleText");
+          this.titleText.innerText = this.title;
+          this.winContent = this.window.querySelector(".windowContent");
+          setInnerHTML(this.winContent, this.content);
+          // this.winContent.innerHTML = this.content;
+          this.handleBar = this.window.querySelector(".resizeHandle");
+
+
+          this.taskbarIcon.src = this.icon;
+
+          this.window.style.width = this.options.width + "px";
+          this.window.style.height = this.options.height + "px";
+          this.window.setAttribute("h", this.options.height);
+          this.window.setAttribute("w", this.options.width);
+          makeDraggable(this.window, this.titleBar);
+          makeResizable(this.window, this.handleBar);
+
+          this.closeButton = this.titleBar.querySelector(".titleBarClose");
+          this.minimizeButton = this.titleBar.querySelector(".titleBarMinimize");
+          this.maximizeButton = this.titleBar.querySelector(".titleBarMaximize");
+
+          this.addEventListeners();
+          windowsList.push([
+            this.UUID,
+            this
+          ]);
+          if (this.options.fullscreen) this.toggleMaximize();
+        }
+        addEventListeners() {
+          this.taskbarIcon.addEventListener("click", () => this.toggleMinimize(true));
+          this.window.addEventListener("mousedown", () => this.focus());
+          this.minimizeButton.addEventListener("click", () => this.toggleMinimize());
+          this.maximizeButton.addEventListener("click", () => this.toggleMaximize());
+          this.closeButton.addEventListener("click", () => this.close());
+
+        }
+
+        unfocus() {
+          alert("unfocused?");
+          this.taskbarIcon.classList.remove("focusedTaskbar");
+        }
+        focus() {
+          this.window.style.zIndex = ++topWindowZ;
+          let oldFocused = document.getElementsByClassName("focusedTaskbar");
+          while (oldFocused.length)
+            oldFocused[0].classList.remove("focusedTaskbar");
+          this.taskbarIcon.classList.add("focusedTaskbar");
+        }
+        toggleMinimize(strict) {
+          if (this.window.style.display != "none" /*&& !(strict && !this.taskbarIcon.classList.contains("focusedTaskbar"))*/) {
+            if (strict && !this.taskbarIcon.classList.contains("focusedTaskbar")) {
+              this.focus();
+              return;
+            }
+            this.taskbarIcon.classList.add("minimizedTaskbar");
+            this.window.style.display = "none";
+          } else {
+            this.taskbarIcon.classList.remove("minimizedTaskbar");
+            this.window.style.display = "block";
+            this.focus();
+          }
+
+        }
+        toggleMaximize() {
+          if (this.window.style.width != this.window.getAttribute("w") + "px" ||
+            this.window.style.height != this.window.getAttribute("h") + "px") {
+            this.window.style.height = this.window.getAttribute("h") + "px";
+            this.window.style.width = this.window.getAttribute("w") + "px";
+            this.window.style.top = this.window.getAttribute("t") + "px";
+            this.window.style.left = this.window.getAttribute("l") + "px";
+          } else {
+            this.window.style.left = "0";
+            this.window.style.top = "0";
+            this.window.style.width = "100%";
+
+            this.window.style.height = "calc(100% - " + 45 + "px)";
+            this.window.style.height = "calc(100% - " + SETTINGS.TASKBAR.TASKBAR_HEIGHT.value + "px)";
+          }
+        }
+        close() {
+          this.window.remove();
+          this.taskbarIcon.remove();
+        }
+      }
+
+      // keybind stuff
+      currentWindowIndex = 0;
+      
+      addKeybind({altKey: true},"Tab",() => {
+        windowsList[currentWindowIndex][1].focus();
+        currentWindowIndex = (currentWindowIndex + 1) % windowsList.length;
+      });
+      addKeybind({ctrlKey: true}, "n", () => {
+        appsList[SETTINGS.WINDOW.DEFAULT_NEW_APP.value].launchApp();
+      })
+      document.body.addEventListener('keyup', function (event) {
+        //keybinds
+        if (SETTINGS.KEYBINDS.KEYBINDS_ENABLED.value) {
+          SETTINGS.KEYBINDS.BINDS.value.forEach(bind => {
+            if (event.shiftKey == bind.shiftKey && 
+                event.ctrlKey == bind.ctrlKey && 
+                event.altKey == bind.altKey && 
+                event.metaKey == bind.metaKey &&
+                event.key == bind.key) {
+                bind.run();
+            }
+          })
+        }
+      });
+
+      //made by GPT
+      function makeDraggable(element, dragElement) {
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        // Event listener for mouse down on the dragElement
+        dragElement.addEventListener('mousedown', (e) => {
+          isDragging = true;
+
+          // Calculate the offset between the cursor and the top-left corner of the element
+          offsetX = e.clientX - element.getBoundingClientRect().left;
+          offsetY = e.clientY - element.getBoundingClientRect().top;
+
+          // Add event listeners for mousemove and mouseup on the document
+          document.addEventListener('mousemove', handleDrag);
+          document.addEventListener('mouseup', () => {
+            isDragging = false;
+            // Remove the event listeners when the mouse is released
+            document.removeEventListener('mousemove', handleDrag);
+          });
+
+          // Prevent default behavior to avoid text selection during dragging
+          e.preventDefault();
+        });
+
+        // Function to handle the dragging
+        function handleDrag(e) {
+          if (isDragging) {
+
+            //exit fullscreen
+            const windowEl = element.closest("window");
+
+
+            // Calculate the new position based on the cursor position and the offset
+            const newX = e.clientX - offsetX;
+            const newY = e.clientY - offsetY;
+
+            // Get the dimensions of the viewport
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            // Limit the new position to stay within the viewport boundaries
+            const newLeft = Math.max(0, Math.min(newX, viewportWidth - element.offsetWidth));
+
+            // Ensure the lower bounding size is 44px higher than it actually is
+            const newTop = Math.max(0, Math.min(newY, viewportHeight - element.offsetHeight - SETTINGS.TASKBAR.TASKBAR_HEIGHT.value));
+            console.log(SETTINGS.TASKBAR.TASKBAR_HEIGHT.value);
+
+            // Set the new position of the element
+            element.style.left = `${newLeft}px`;
+            element.setAttribute("l", newLeft);
+            element.style.top = `${newTop}px`;
+            element.setAttribute("t", newTop);
+          }
+        }
+      }
+
+      // Resizable Functionality
+      function makeResizable(element, handle) {
+        // Set the initial position of the handle
+        let startX, startY, startWidth, startHeight;
+
+        // Function to handle the mousemove event
+        function handleMouseMove(e) {
+          // Calculate the change in mouse position
+          const dx = e.clientX - startX;
+          const dy = e.clientY - startY;
+
+
+          // Update the element's width and height based on the mouse movement
+          const MIN_WIDTH = 120;
+          const MIN_HEIGHT = 80;
+
+          const newWidth = Math.max(MIN_WIDTH, startWidth + dx);
+          //prevent it from overflowing onto taskbar
+          const newHeight = Math.max(MIN_HEIGHT, Math.min(startHeight + dy + element.offsetTop, window.innerHeight - SETTINGS.TASKBAR.TASKBAR_HEIGHT.value) - element.offsetTop);
+
+          // Set the new width and height of the element
+          element.style.width = `${newWidth}px`;
+          element.setAttribute("w", newWidth);
+          element.style.height = `${newHeight}px`;
+          element.setAttribute("h", newHeight);
+        }
+
+        // Function to handle the mouseup event
+        function handleMouseUp() {
+          // Remove the event listeners for mousemove and mouseup
+          document.removeEventListener('mousemove', handleMouseMove);
+          document.removeEventListener('mouseup', handleMouseUp);
+        }
+
+        // Function to handle the mousedown event on the handle
+        function handleMouseDown(e) {
+          // Store the initial mouse position and the initial size of the element
+          startX = e.clientX;
+          startY = e.clientY;
+          startWidth = element.offsetWidth;
+          startHeight = element.offsetHeight;
+          console.log(startY)
+
+          // Add event listeners for mousemove and mouseup
+          document.addEventListener('mousemove', handleMouseMove);
+          document.addEventListener('mouseup', handleMouseUp);
+        }
+
+        // Add a mousedown event listener to the handle
+        handle.addEventListener('mousedown', handleMouseDown);
+      }
+
+
+
+      new Window(" ", {
+        width: 400,
+        height: 300,
+        template: "Browser"
+      }, `
+  <iframe src="https://bing.bizuit.com/" class="full-frame"></iframe>
+  `, "")
+
+      // new Window(" ", {width: 400,height: 300,}, `<iframe src="${prompt("url?","https://")}" class="full-frame"></iframe>`, "")
+
+    }
+
+  </script>
+  <script id="search-menu-scripts">
+    function search_menu_scripts() {
+      //search menu
+      const searchButton = document.getElementById("search-button");
+      const searchMenu = document.querySelector(".search-menu")
+      searchButton.addEventListener("click", () => {
+        searchMenu.classList.toggle("hidden");
+      })
+      window.addEventListener('click', function (e) {
+        if (!searchMenu.contains(e.target) && !searchButton.contains(e.target)) {
+          searchMenu.classList.add("hidden");
+          //click inside of element  
+        } else {
+          //click outside of element
+        }
+      });
+      addKeybind({}, "Meta", () => {searchMenu.classList.toggle("hidden")});
+    }
+
+  </script>
+  <script id="init">
+    function init_all() {
+
+      taskbar_scripts();
+      window_scripts();
+      search_menu_scripts();
+
+      if (!SETTINGS.BACKGROUND.URL.value || !SETTINGS.BACKGROUND.AUTOSAVE) {
+        SETTINGS.BACKGROUND.URL.value = prompt("background image?");
+        localStorage.setItem("bg", SETTINGS.BACKGROUND.IMAGE.value);
+      }
+      document.body.style.backgroundImage = "url(\"" + SETTINGS.BACKGROUND.URL.value + "\")";
+    }
+
+  </script>
+</head>
+
+<body onload="init_all()" class="bg">
+
+  <!-- Window templates -->
+  <!-- Default -->
+
+  <template id="windowTemplateDefault">
+    <div class="windowTitleBarDefault titleBar">
+      <titleText></titleText>
+      <span class="right">
+        <button class="titleBarButton titleBarMinimize">
+          —
+        </button>
+        <button class="titleBarButton titleBarMaximize">
+          □
+        </button>
+        <button class="titleBarButton titleBarClose">
+          ×
+        </button>
+      </span>
+    </div>
+    <div class="resizeHandle"></div>
+    <div class="windowContentDefault windowContent">
+    </div>
+  </template>
+  <template id="windowTemplateDefaultLight">
+    <div class="windowTitleBarDefault titleBar">
+      <titleText></titleText>
+      <span class="right">
+        <button class="titleBarButton titleBarMinimize">
+          —
+        </button>
+        <button class="titleBarButton titleBarMaximize">
+          □
+        </button>
+        <button class="titleBarButton titleBarClose">
+          ×
+        </button>
+      </span>
+    </div>
+    <div class="resizeHandle"></div>
+    <div class="windowContentDefaultLight windowContent">
+    </div>
+  </template>
+
+  <!-- rammerhead template -->
+  <template id="windowTemplateBrowser">
+    <div class="windowTitleBarRH titleBar">
+      <titleText class="templateRH"></titleText>
+      <span class="right">
+        <button class="titleBarButton templateRH titleBarMinimize">
+          —
+        </button>
+        <button class="titleBarButton templateRH titleBarMaximize">
+          □
+        </button>
+        <button class="titleBarButton templateRH titleBarClose">
+          ×
+        </button>
+      </span>
+    </div>
+    <div class="resizeHandle"></div>
+    <div class="windowContentRH windowContent">
+    </div>
+  </template>
+
+  <!-- apps-->
+  <template id="appBrowser"><iframe src="https://bing.bizuit.com/" class="full-frame"></iframe></template>
+  <template id="appSettings">
+    <!-- <script id="settings-init-script">
+      console.log("this", this);
+      document.querySelector("#settings-iframe").setAttribute("src", window.location.href);
+      document.querySelector("#settings-iframe").contentWindow.document.open();
+      document.querySelector("#settings-iframe").contentWindow.document.write(document.querySelector("#settings-template").innerHTML);
+      document.querySelector("#settings-iframe").contentWindow.document.close();
+      document.querySelector("#settings-template").remove();
+      document.querySelector("#settings-init-script").remove();
+    </script> -->
+    <!-- <iframe id="settings-iframe" class="full-frame" allow="midi; geolocation; microphone; camera; display-capture; encrypted-media; clipboard-read; clipboard-write; notifications; persistent-storage; background-sync; ambient-light-sensor; accessibility-events;" sandbox="allow-modals allow-forms allow-scripts allow-same-origin allow-popups allow-top-navigation-by-user-activation allow-downloads" allowfullscreen></iframe> -->
+    <!-- <iframe id="settings-iframe" class="full-frame"> -->
+
+    <!-- </iframe>
+    <template id="settings-template">
+      <html>
+
+      <head> -->
+        
+      <!-- </head>
+
+      <body> -->
+
+        <!-- Settings app -->
+        <div class="full-frame" style="overflow:scroll;">
+          <div class="settings-sidebar chrome-style shadow">
+            <div class="sidebar-header">
+              <img src="https://www.google.com/chrome/static/images/chrome-logo.svg" width=35px>
+              <div class="sidebar-header-text">
+                Settings
+              </div>
+            </div>
+            <a href="#TASKBAR" class="sidebar-link">
+              <div class="sidebar-item chrome-style">
+                Taskbar Settings
+              </div>
+            </a>
+            <a href="#WINDOW" class="sidebar-link">
+              <div class="sidebar-item chrome-style">
+                Window Settings
+              </div>
+            </a>
+            <a href="#BACKGROUND" class="sidebar-link">
+              <div class="sidebar-item chrome-style">
+                Background Settings
+              </div>
+            </a>
+          </div>
+          <div class="settings-container chrome-style">
+            <!-- Taskbar settings -->
+            <div class="settings-category-container chrome-style">
+              <div class="settings-category-label chrome-style">
+                Taskbar
+              </div>
+              <div class="settings-category chrome-style shadow" id="TASKBAR">
+                <div class="setting chrome-style">
+                  <span class="setting-label chrome-style">
+                    Taskbar Autohide
+                  </span>
+                  <input type="checkbox" class="toggle setting-input chrome-style" id="AUTOHIDE">
+                </div>
+                <hr class="bottom-border" />
+                <div class="setting chrome-style">
+                  <span class="setting-label chrome-style">
+                    Taskbar Height
+                  </span>
+                  <div class="textInputWrapper">
+                    <input type="number" min="1" max="45" value="300" class="chrome-style setting-input"
+                      id="TASKBAR_HEIGHT">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Window Settings -->
+            <div class="settings-category-container chrome-style">
+              <div class="settings-category-label chrome-style">
+                Window Settings
+              </div>
+              <div class="settings-category chrome-style shadow" id="WINDOW">
+
+                <div class="setting chrome-style">
+                  <span class="setting-label chrome-style">
+                    New Window Default App
+                  </span>
+                  <div class="textInputWrapper">
+                    <input type="text" class="chrome-style setting-input" id="DEFAULT_NEW_APP" value="Browser">
+                  </div>
+                </div>
+                <hr class="bottom-border" />
+                <div class="setting chrome-style">
+                  <span class="setting-label chrome-style">
+                    Default Window Theme
+                  </span>
+                  <select id="DEFAULT_TEMPLATE" class="chrome-style setting-input">
+                    <option value="Default">Default</option>
+                    <option value="Light">Light Mode</option>
+                    <option value="Dark">Dark Mode</option>
+                  </select>
+                </div>
+                <hr class="bottom-border" />
+                <div class="setting chrome-style">
+                  <span class="setting-label chrome-style">
+                    New Window Default Width
+                  </span>
+                  <div class="textInputWrapper">
+                    <input type="range" min="50" max="1200" value="400" class="chrome-style setting-input"
+                      id="DEFAULT_WIDTH">
+                  </div>
+                </div>
+                <hr class="bottom-border" />
+                <div class="setting chrome-style">
+                  <span class="setting-label chrome-style">
+                    New Window Default Height
+                  </span>
+                  <div class="textInputWrapper">
+                    <input type="range" min="50" max="600" value="300" class="chrome-style setting-input"
+                      id="DEFAULT_HEIGHT">
+                  </div>
+                </div>
+                <hr class="bottom-border" />
+                <div class="setting chrome-style">
+                  <span class="setting-label chrome-style">
+                    Windows Start Fullscreen
+                  </span>
+                  <input type="checkbox" class="toggle setting-input chrome-style" id="FULLSCREEN">
+                </div>
+              </div>
+            </div>
+            <!-- Background Settings -->
+            <div class="settings-category-container chrome-style">
+              <div class="settings-category-label chrome-style">
+                Background Settings
+              </div>
+              <div class="settings-category chrome-style shadow" id="BACKGROUND">
+
+                <div class="setting chrome-style">
+                  <span class="setting-label chrome-style">
+                    Background image URL
+                  </span>
+                  <div class="textInputWrapper">
+                    <input type="text" class="chrome-style setting-input" id="URL" value="https://">
+                  </div>
+                </div>
+                <hr class="bottom-border" />
+                <div class="setting chrome-style">
+                  <span class="setting-label chrome-style">
+                    Background autosave
+                  </span>
+                  <input type="checkbox" class="toggle setting-input chrome-style" id="AUTOSAVE">
+                </div>
+              </div>
+            </div>
+          </div>
+          <script defer>
+
+            function updateSettings() {
+              Object.keys(SETTINGS).forEach(category => {
+                try {
+                Object.keys(SETTINGS[category]).forEach(setting => {
+                  try {
+                  // console.log("setting:", setting, SETTINGS[category][setting]);
+                  document.getElementById(setting).value = SETTINGS[category][setting].value;
+                } catch (e) {
+                  console.log(e);
+                }
+              })
+              } catch (e) {
+                console.log(e);
+              } 
+              })
+            
+            }
+            function findSettingsInputs() {
+              let unordered = Array.from(document.querySelectorAll('.setting-input')).map(input => {
+                let category = input.closest(".settings-category").id;
+                let out = {};
+                if (!out[category]) out[category] = {};
+                out[category][input.id] = {
+                  value: input.type == "checkbox" ? input.checked : input.value,
+                  name: input.id,
+                  type: input.type
+                }
+                return out;
+              });
+              const result = {};
+
+              unordered.forEach((obj) => {
+                const key = Object.keys(obj)[0];
+                const value = obj[key];
+
+                if (result[key]) {
+                  Object.assign(result[key], value);
+                } else {
+                  result[key] = value;
+                }
+              });
+              return result
+            }
+
+            function initiateSettings() {
+              updateSettings();
+              console.log("initiating settings");
+              console.log(document.querySelectorAll(".setting-input"));
+              document.querySelectorAll(".setting-input").forEach(
+                (settingInput) => {
+                  settingInput.addEventListener("change", () => {
+                    console.log("changed!")
+                    Object.assign(SETTINGS,findSettingsInputs());
+                    if (SETTINGS.TASKBAR.AUTOHIDE.value) changeStyle("#gallium-taskbar", "bottom", ((-SETTINGS.TASKBAR.TASKBAR_HEIGHT.value) + 1) + "px")
+                    else changeStyle("#gallium-taskbar", "bottom", "0px")
+                    console.log("saved settings!", SETTINGS);
+                    updateSettings();
+                  })
+                })
+            }
+            initiateSettings();
+
+          </script>
+        </div>
+      <!-- </body>
+      </html>
+    </template>
+    </iframe> -->
+
+  </template>
+
+  <!-- Taskbar (needs to be at the bottom) -->
+  <div id="gallium-taskbar" class="blur-bg">
+
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <span class="gallium-far-Left-stuff">
+      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"
+        style="margin-left:2px; margin-top: 4px;" id="search-button">
+        <!-- background circle -->
+        <circle cx="20" cy="20" r="18" fill="rgba(255, 255, 255, 0.2)" class="hover-bright" />
+
+        <!-- outer circle with outline -->
+        <circle cx="20" cy="20" r="6" fill="none" stroke="#ffffff" stroke-width="2" />
+
+        <!-- inner filled circle (removed for now) -->
+        <!-- <circle cx="20" cy="20" r="6" fill="#ffffff" /> -->
+      </svg>
+      <div class="search-menu blur-bg hidden">
+        <div id="top-row">
+          <span id="google-logo"></span>
+          <input class="search-input" placeholder="Search for your settings, files, apps, and more" autocomplete="off"
+            autocorrect="off" autocapitalize="off" spellcheck="false" />
+
+        </div>
+        <hr class="search-menu-divider" />
+        <div id="search-menu-bottom-row">
+
+        </div>
+      </div>
+
+    </span>
+    <center class="gallium-middle-stuff">
+      <span id="gallium-middle-stuff-content">
+
+
+
+      </span>
+    </center>
+    <span class="gallium-far-right-stuff">
+      <span id="gallium-time-container">
+        <span style="padding: 7.5px; padding-right: 0px; padding-left: 13px; height: 25px; width: calc(100% - 15px);">
+          <span class="gallium-left-icon" id="gallium-actual-time">12:30</span>
+          <span class="material-symbols-outlined left-icon" style="font-size: 22px; margin-left: 2px;"
+            id="gallium-wifi-bar">
+            network_wifi_3_bar
+          </span>
+          <span class="material-symbols-outlined left-icon" id="gallium-battery-bar">
+            battery_6_bar
+          </span>
+        </span>
+      </span>
+    </span>
+
+  </div>
+</body>
+
+</html>
